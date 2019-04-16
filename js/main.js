@@ -114,7 +114,8 @@ PlayState.preload = function () {
     this.game.load.json('level:1', 'data/level03.json');
     */
     // charger map bg
-    this.game.load.image('background', 'images/background.png');
+    this.game.load.image('background:0', 'images/background.png');
+    this.game.load.image('background:1', 'images/background-1.png');
     // charger murs invisibles
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     // charger la clé
@@ -167,7 +168,7 @@ PlayState.create = function () {
         stomp: this.game.add.audio('sfx:stomp')
     };
        //creation du background
-    this.game.add.image(0, 0, 'background');
+    this.game.add.image(0, 0, `background:${this.level}`);
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
     this._createHud();
 
@@ -289,7 +290,7 @@ PlayState._onHeroVsKey = function (hero, key) {
 };
 PlayState._onHeroVsDoor = function (hero, door) {
     this.sfx.door.play();
-    this.game.state.restart(true, false, { level: this.level +1 });
+    this.game.state.restart(true, false, { level: this.level +1});
     // TODO: go to the next level instead
 };
 
