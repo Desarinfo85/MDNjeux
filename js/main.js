@@ -14,9 +14,9 @@ function Hero(game, x, y) {
     this.body.collideWorldBounds = true;
 
     this.animations.add('stop', [0]);
-    this.animations.add('run', [1, 2], 8, true); // boucle de 8fps
-    this.animations.add('jump', [3]);
-    this.animations.add('fall', [4]);
+    this.animations.add('run', [0, 1, 2, 3], 8, true); // boucle de 8fps
+    this.animations.add('jump', [1]);
+    this.animations.add('fall', [3]);
 };
 //herite du phaser sprite
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
@@ -82,7 +82,7 @@ PlayState.init = function (data) {
     this.keys = this.game.input.keyboard.addKeys({
         left: Phaser.KeyCode.LEFT,
         right: Phaser.KeyCode.RIGHT,
-        up: Phaser.KeyCode.UP
+        up: Phaser.KeyCode.SPACEBAR
     });
     this.keys.up.onDown.add(function () {
         let didJump = this.hero.jump();
@@ -129,7 +129,7 @@ PlayState.preload = function () {
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
     
     // charge le hero
-    this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
+    this.game.load.spritesheet('hero', 'images/hero.png', 29, 42);
     //icon piece score 
     this.game.load.image('icon:coin', 'images/coin_icon.png');
     //Text score 
