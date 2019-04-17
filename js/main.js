@@ -5,6 +5,7 @@ window.onload = function () {
     game.state.add('play', PlayState);
     game.state.start('play', true, false, {level: 0});
 };
+
 //===================================================
 function Hero(game, x, y) {
     // appelle Phaser.Sprite constructeur
@@ -13,10 +14,12 @@ function Hero(game, x, y) {
     this.game.physics.enable(this);
     this.body.collideWorldBounds = true;
 
-    this.animations.add('stop', [0]);
-    this.animations.add('run', [0, 1, 2, 3], 8, true); // boucle de 8fps
-    this.animations.add('jump', [1]);
-    this.animations.add('fall', [3]);
+    this.animations.add('stop', [0, 1, 2, 3]);
+    this.animations.add('run', [4, 5, 6, 7], 8, true); // boucle de 8fps
+    this.animations.add('jump', [8, 9, 10]);
+    this.animations.add('fall', [11, 12], 8, false);
+    this.animations.add('death', [13, 14, 15, 16]);
+
 };
 //herite du phaser sprite
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
@@ -116,10 +119,11 @@ PlayState.preload = function () {
     // charger map bg
     this.game.load.image('background:0', 'images/background.png');
     this.game.load.image('background:1', 'images/background-1.png');
+    this.game.load.image('background:2', 'images/background-2.png');
     // charger murs invisibles
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     // charger la clé
-    this.game.load.image('key', 'images/key.png');
+    this.game.load.spritesheet('key', 'images/key.png', 52.3, 42);
 
     //on place toutes les images du fichier JSON ici
     this.game.load.image('ground', 'images/ground.png');
@@ -128,9 +132,12 @@ PlayState.preload = function () {
     this.game.load.image('grass:4x1', 'images/grass_4x1.png');
     this.game.load.image('grass:2x1', 'images/grass_2x1.png');
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
-    
+    this.game.load.image('tree_1', 'images/tree_1.png');
+    this.game.load.image('tree_2', 'images/tree_2.png');
     // charge le hero
-    this.game.load.spritesheet('hero', 'images/hero.png', 29, 42);
+    this.game.load.spritesheet('hero', 'images/hero.png', 52.47, 42);
+    //animation saut
+    
     //icon piece score 
     this.game.load.image('icon:coin', 'images/coin_icon.png');
     //Text score 
@@ -148,11 +155,12 @@ PlayState.preload = function () {
 
 
     //charger les prites
-    this.game.load.spritesheet('coin', 'images/coin_animated.png', 22, 22);
+    this.game.load.spritesheet('coin', 'images/coin_animated.png', 38, 42);
     // charger les spiders
-    this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+    this.game.load.spritesheet('spider', 'images/spider.png', 45.7, 42);
+    this.game.load.spritesheet('dragoon', 'images/dragoon.png', 44, 42);
     //charger porte 
-    this.game.load.spritesheet('door', 'images/door.png', 42, 66);
+    this.game.load.spritesheet('door', 'images/door.png', 72, 84);
     // charger clef icon
     this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30);
 };
@@ -215,6 +223,7 @@ PlayState._loadLevel = function (data) {
     //créa porte
     this.bgDecoration = this.game.add.group();    
     // creation des groupe dans la function
+    this.trees = this.game.add.group();
     this.platforms = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
@@ -223,6 +232,7 @@ PlayState._loadLevel = function (data) {
     // le console log permet de voir les objets json :-)
     //console.log(data);
    data.platforms.forEach(this._spawnPlatform, this);
+   data.trees.forEach(this._spawnTree, this);
    // on affiche le personnage et les ennemis
    this._spawnCharacters({hero: data.hero, spiders: data.spiders});
     // active la gravité
@@ -248,7 +258,14 @@ PlayState._spawnPlatform = function (platform) {
     this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
 };
 
+PlayState._spawnTree = function (tree) {
+    let sprite = this.trees.create(
+        tree.x, tree.y, tree.image);
 
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+};
 PlayState._spawnCharacters = function (data) {
     // spawn spiders
     data.spiders.forEach(function (spider) {
@@ -263,7 +280,7 @@ PlayState._spawnCharacters = function (data) {
 PlayState._spawnCoin = function (coin) {
     let sprite = this.coins.create(coin.x, coin.y, 'coin');
     sprite.anchor.set(0.5, 0.5);
-    sprite.animations.add('rotate', [0, 1, 2, 1], 6, true); // 6fps, rotation
+    sprite.animations.add('rotate', [0, 1, 2, 3, 4, 5, 6], 8, true); // 8fps, rotation
     sprite.animations.play('rotate');
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
@@ -299,10 +316,11 @@ function Spider(game, x, y) {
 
     // ancre
     this.anchor.set(0.5);
-    // animation
-    this.animations.add('crawl', [0,1,2], 8, true);
-    this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
-    this.animations.play('crawl');
+    
+    
+    this.animations.add('right', [4,5,6,7], 8, true);
+    this.animations.add('die', [8, 9, 10, 11], 8, false);
+    this.animations.play('right');
 
     // proriétées phisiques
     this.game.physics.enable(this);
@@ -326,28 +344,30 @@ PlayState._spawnEnemyWall = function(x, y, side) {
     this.game.physics.enable(sprite);
     sprite.body.immovable = true;
     sprite.body.allowGravity = false;
-}
+};
 
 Spider.prototype.update = function() {
+       
     // checker si collision avec wall et inverser direction si besoin
     if (this.body.touching.right || this.body.blocked.right){
         this.body.velocity.x = -Spider.SPEED; //turn left
+        this.scale.x = -1;
     } else if (this.body.touching.left || this.body.blocked.left){
         this.body.velocity.x = Spider.SPEED; //turn right
+        this.scale.x = 1;
     }
-}
 
-
-Spider.prototype.die = function () {
-    this.body.enable = false;
-
-    this.animations.play('die').onComplete.addOnce(function () {
-        this.kill();
-    }, this);
 };
 
 
-
+Spider.prototype.die = function () {  
+    this.body.enable = false;
+    this.animations.play('die').onComplete.addOnce(function () {
+        this.kill();
+    }, this);
+    
+    //  this.visible = false;
+};
 
 PlayState._createHud = function () {
     this.keyIcon = this.game.make.image(0, 19, 'icon:key');
@@ -382,6 +402,7 @@ PlayState._spawnDoor = function (x, y) {
 
 // SPAWN CLEF
 PlayState._spawnKey = function (x, y) {
+    //this.animations.add('key', [0,1,2,3]);
     this.key = this.bgDecoration.create(x, y, 'key');
     this.key.anchor.set(0.5, 0.5);
     this.game.physics.enable(this.key);
