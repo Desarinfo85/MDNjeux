@@ -14,12 +14,12 @@ function Hero(game, x, y) {
     this.game.physics.enable(this);
     this.body.collideWorldBounds = true;
 
-    this.animations.add('stop', [0, 1, 2, 3]);
+    this.animations.add('stop', [1, 2, 3],4 ,true);
     this.animations.add('run', [4, 5, 6, 7], 8, true); // boucle de 8fps
     this.animations.add('jump', [8, 9, 10]);
     this.animations.add('fall', [11, 12], 8, false);
     this.animations.add('death', [13, 14, 15, 16]);
-
+    this.animations.play('stop');
 };
 //herite du phaser sprite
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
