@@ -4,6 +4,8 @@ var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: p
 
         game.load.spritesheet('button', 'images/start.png', 193, 71);
         game.load.image('background-begin', 'images/underground.png');
+
+        game.load.audio('wind', 'audio/wind.wav');
     }
     
     var text;
@@ -12,6 +14,8 @@ var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: p
     var y = 80;
     
     function create() {
+        musicSound = this.sound.add('wind');
+        musicSound.play();
         game.add.image(0, 0, 'background-begin');
     
         //	You can listen for each of these events from Phaser.Loader
@@ -45,19 +49,7 @@ var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: p
     //	This callback is sent the following parameters:
     function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
     
-        // text.setText("File Complete: " + progress + "% - " + totalLoaded + " out of " + totalFiles);
-    
-        // var newImage = game.add.image(x, y, cacheKey);
-    
-        // newImage.scale.set(0.3);
-    
-        // x += newImage.width + 20;
-    
-        // if (x > 700)
-        // {
-        //     x = 32;
-        //     y += 332;
-        // }
+        
     
     }
     
