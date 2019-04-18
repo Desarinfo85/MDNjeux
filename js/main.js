@@ -1,10 +1,74 @@
 // affiche la fenetre du jeu sur la page web
-window.onload = function () {
-    let game = new Phaser.Game(960, 600, Phaser.AUTO, 'game');
-    // creer l 'etat du jeu
-    game.state.add('play', PlayState);
-    game.state.start('play', true, false, {level: 0});
-};
+var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create });
+    function preload() {
+
+        game.load.spritesheet('button', 'images/start.png', 193, 71);
+        game.load.image('background-begin', 'images/underground.png');
+    }
+    
+    var text;
+    var button;
+    var x = 32;
+    var y = 80;
+    
+    function create() {
+        game.add.image(0, 0, 'background-begin');
+    
+        //	You can listen for each of these events from Phaser.Loader
+        game.load.onLoadStart.add(loadStart, this);
+        game.load.onFileComplete.add(fileComplete, this);
+        game.load.onLoadComplete.add(loadComplete, this);
+    
+        //	Just to kick things off
+        button = game.add.button(game.world.centerX - 75, 275, 'button', start, this, 2, 1, 0);
+    
+        //	Progress report
+        text = game.add.text(32, 32, 'Clique sur "Start" pour commencer !', { fill: '#ffffff' });
+    
+    }
+    
+    function start() {
+    
+       
+        game.state.add('play', PlayState);
+        game.state.start('play', true, false, {level: 0});
+        button.visible = false;
+    
+    }
+    
+    function loadStart() {
+    
+        text.setText("Loading ...");
+    
+    }
+    
+    //	This callback is sent the following parameters:
+    function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
+    
+        // text.setText("File Complete: " + progress + "% - " + totalLoaded + " out of " + totalFiles);
+    
+        // var newImage = game.add.image(x, y, cacheKey);
+    
+        // newImage.scale.set(0.3);
+    
+        // x += newImage.width + 20;
+    
+        // if (x > 700)
+        // {
+        //     x = 32;
+        //     y += 332;
+        // }
+    
+    }
+    
+    function loadComplete() {
+    
+        
+    
+    }
+    
+    
+
 
 //===================================================
 function Hero(game, x, y) {
@@ -26,7 +90,7 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
 //on ajoute le mouvement
 Hero.prototype.move = function (direction) {
-    const SPEED = 300;
+    const SPEED = 400;
     this.body.velocity.x = direction * SPEED;
 
     if (this.body.velocity.x < 0) {
@@ -79,7 +143,7 @@ Hero.prototype.update = function () {
 // le playstate
 PlayState = {};
 // numero du level
-const LEVEL_COUNT = 3;
+const LEVEL_COUNT = 4;
 PlayState.init = function (data) {
     //initialisation des touches claviers
     this.keys = this.game.input.keyboard.addKeys({
@@ -104,6 +168,8 @@ PlayState.init = function (data) {
 // on recupere les images
 PlayState.preload = function () {
 //==========================
+//charge la page accueil
+   
 // charger data des level
     // level 0 load
     this.game.load.json('level:0', 'data/level00.json');
@@ -112,14 +178,15 @@ PlayState.preload = function () {
     
     // level 2 load
     this.game.load.json('level:2', 'data/level02.json');
-    /*
-    // level 3 load
-    this.game.load.json('level:1', 'data/level03.json');
-    */
+    
+     //level 3 load
+    this.game.load.json('level:3', 'data/level03.json');
+    
     // charger map bg
     this.game.load.image('background:0', 'images/background.png');
     this.game.load.image('background:1', 'images/background-1.png');
     this.game.load.image('background:2', 'images/background-2.png');
+    this.game.load.image('background:3', 'images/underground.png');
     // charger murs invisibles
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     // charger la clé
@@ -139,7 +206,7 @@ PlayState.preload = function () {
     //animation saut
     
     //icon piece score 
-    this.game.load.image('icon:coin', 'images/coin_icon.png');
+    this.game.load.image('icon:coin', 'images/ring.png', 43.5, 42);
     //Text score 
     this.game.load.image('font:numbers', 'images/numbers.png');
     //son
@@ -160,9 +227,9 @@ PlayState.preload = function () {
     this.game.load.spritesheet('spider', 'images/spider.png', 45.7, 42);
     this.game.load.spritesheet('dragoon', 'images/dragoon.png', 44, 42);
     //charger porte 
-    this.game.load.spritesheet('door', 'images/door.png', 72, 84);
+    this.game.load.spritesheet('door', 'images/doors.png', 56.5, 66);
     // charger clef icon
-    this.game.load.spritesheet('icon:key', 'images/key_icon.png', 34, 30);
+    this.game.load.spritesheet('icon:key', 'images/key_icon.png', 42.5, 42);
 };
 
 PlayState.create = function () {
@@ -188,6 +255,7 @@ PlayState.update = function () {
     this._handleInput();
     this.coinFont.text = `x${this.coinPickupCount}`;
     this.keyIcon.frame = this.hasKey ? 1 : 0;
+    this.door.frame = this.hasKey ? 0 : 1;
 };
 
 PlayState._handleCollisions = function () {
