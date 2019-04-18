@@ -1,11 +1,11 @@
 // affiche la fenetre du jeu sur la page web
 var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create });
     function preload() {
-
+        game.load.audio('wind', 'audio/wind.wav');
         game.load.spritesheet('button', 'images/start.png', 193, 71);
         game.load.image('background-begin', 'images/underground.png');
 
-        game.load.audio('wind', 'audio/wind.wav');
+        
     }
     
     var text;
@@ -82,7 +82,7 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
 //on ajoute le mouvement
 Hero.prototype.move = function (direction) {
-    const SPEED = 400;
+    const SPEED = 200;
     this.body.velocity.x = direction * SPEED;
 
     if (this.body.velocity.x < 0) {
@@ -193,6 +193,9 @@ PlayState.preload = function () {
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
     this.game.load.image('tree_1', 'images/tree_1.png');
     this.game.load.image('tree_2', 'images/tree_2.png');
+    this.game.load.image('bush_1', 'images/bush_1.png');
+    this.game.load.image('bush_2', 'images/bush_2.png');
+    this.game.load.image('bush_3', 'images/bush_3.png');
     // charge le hero
     this.game.load.spritesheet('hero', 'images/hero.png', 52.47, 42);
     //animation saut
@@ -284,6 +287,7 @@ PlayState._loadLevel = function (data) {
     this.bgDecoration = this.game.add.group();    
     // creation des groupe dans la function
     this.trees = this.game.add.group();
+    this.bushes = this.game.add.group();
     this.platforms = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
@@ -293,6 +297,7 @@ PlayState._loadLevel = function (data) {
     //console.log(data);
    data.platforms.forEach(this._spawnPlatform, this);
    data.trees.forEach(this._spawnTree, this);
+   data.bushes.forEach(this._spawnBush, this);
    // on affiche le personnage et les ennemis
    this._spawnCharacters({hero: data.hero, spiders: data.spiders});
     // active la gravité
@@ -321,6 +326,14 @@ PlayState._spawnPlatform = function (platform) {
 PlayState._spawnTree = function (tree) {
     let sprite = this.trees.create(
         tree.x, tree.y, tree.image);
+
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+};
+PlayState._spawnBush = function (bush) {
+    let sprite = this.bushes.create(
+        bush.x, bush.y, bush.image);
 
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
