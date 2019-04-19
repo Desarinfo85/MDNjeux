@@ -1,2 +1,2 @@
-# philSquirel
- https://desarinfo85.github.io/philSquirel/.
+# MDNjeux
+https://desarinfo85.github.io/MDNjeux/.
