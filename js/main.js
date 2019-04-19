@@ -1,11 +1,12 @@
 // affiche la fenetre du jeu sur la page web
-var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create });
+var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create});
     function preload() {
-        game.load.audio('wind', 'audio/wind.wav');
+        game.load.audio('wind', 'audio/wind.mp3');
         game.load.spritesheet('button', 'images/start.png', 193, 71);
-        game.load.image('background-begin', 'images/underground.png');
+        game.load.spritesheet('button1', 'images/restart.png', 193, 71);
+        game.load.image('background-begin', 'images/title_screen.png');
+        game.load.image('bg', 'images/win_png.png');
 
-        
     }
     
     var text;
@@ -15,7 +16,9 @@ var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: p
     
     function create() {
         musicSound = this.sound.add('wind');
+        musicSound.loopFull();
         musicSound.play();
+        
         game.add.image(0, 0, 'background-begin');
     
         //	You can listen for each of these events from Phaser.Loader
@@ -27,36 +30,25 @@ var game = new Phaser.Game(970, 600, Phaser.AUTO, 'phaser-example', { preload: p
         button = game.add.button(game.world.centerX - 75, 275, 'button', start, this, 2, 1, 0);
     
         //	Progress report
-        text = game.add.text(32, 32, 'Clique sur "Start" pour commencer !', { fill: '#ffffff' });
+        text = game.add.text(32, 32, '', { fill: '#ffffff' });
     
     }
     
     function start() {
-    
-       
         game.state.add('play', PlayState);
         game.state.start('play', true, false, {level: 0});
-        button.visible = false;
-    
+        button.visible = false;        
     }
-    
+
     function loadStart() {
-    
         text.setText("Loading ...");
-    
     }
     
     //	This callback is sent the following parameters:
     function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
-    
-        
-    
     }
     
     function loadComplete() {
-    
-        
-    
     }
     
     
@@ -82,7 +74,7 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructor = Hero;
 //on ajoute le mouvement
 Hero.prototype.move = function (direction) {
-    const SPEED = 200;
+    const SPEED = 300;
     this.body.velocity.x = direction * SPEED;
 
     if (this.body.velocity.x < 0) {
@@ -135,7 +127,7 @@ Hero.prototype.update = function () {
 // le playstate
 PlayState = {};
 // numero du level
-const LEVEL_COUNT = 4;
+const LEVEL_COUNT = 5;
 PlayState.init = function (data) {
     //initialisation des touches claviers
     this.keys = this.game.input.keyboard.addKeys({
@@ -173,12 +165,14 @@ PlayState.preload = function () {
     
      //level 3 load
     this.game.load.json('level:3', 'data/level03.json');
-    
+    //level 4 load
+    this.game.load.json('level:4', 'data/level04.json');
     // charger map bg
-    this.game.load.image('background:0', 'images/background.png');
-    this.game.load.image('background:1', 'images/background-1.png');
-    this.game.load.image('background:2', 'images/background-2.png');
-    this.game.load.image('background:3', 'images/underground.png');
+    this.game.load.image('background:0', 'images/background-sky.png');
+    this.game.load.image('background:1', 'images/background-desert.png');
+    this.game.load.image('background:2', 'images/background-jungle.png');
+    this.game.load.image('background:3', 'images/background-cave.png');
+    this.game.load.image('background:4', 'images/background-jungle.png');
     // charger murs invisibles
     this.game.load.image('invisible-wall', 'images/invisible_wall.png');
     // charger la clé
@@ -191,11 +185,40 @@ PlayState.preload = function () {
     this.game.load.image('grass:4x1', 'images/grass_4x1.png');
     this.game.load.image('grass:2x1', 'images/grass_2x1.png');
     this.game.load.image('grass:1x1', 'images/grass_1x1.png');
+
+    // jungle platforms
+    this.game.load.image('wood:8x1', 'images/wood_8x1.png');
+    this.game.load.image('wood:6x1', 'images/wood_6x1.png');
+    this.game.load.image('wood:4x1', 'images/wood_4x1.png');
+    this.game.load.image('wood:2x1', 'images/wood_2x1.png');
+    this.game.load.image('wood:1x1', 'images/wood_1x1.png');
+
+    this.game.load.image('woodLogs:8x1', 'images/woodenLog_8x1.png');
+    this.game.load.image('woodLogs:6x1', 'images/woodenLog_6x1.png');
+    this.game.load.image('woodLogs:4x1', 'images/woodenLog_4x1.png');
+    this.game.load.image('woodLogs:2x1', 'images/woodenLog_2x1.png');
+    this.game.load.image('woodLogs:1x1', 'images/woodenLog_1x1.png');
+
+    // lave niveau
+    this.game.load.image('ground_grey', 'images/ground_grey.png');
+    this.game.load.image('grey:8x1', 'images/grey_8x1.png');
+    this.game.load.image('grey:6x1', 'images/grey_6x1.png');
+    this.game.load.image('grey:4x1', 'images/grey_4x1.png');
+    this.game.load.image('grey:2x1', 'images/grey_2x1.png');
+    this.game.load.image('grey:1x1', 'images/grey_1x1.png');
+
     this.game.load.image('tree_1', 'images/tree_1.png');
     this.game.load.image('tree_2', 'images/tree_2.png');
     this.game.load.image('bush_1', 'images/bush_1.png');
     this.game.load.image('bush_2', 'images/bush_2.png');
     this.game.load.image('bush_3', 'images/bush_3.png');
+    // image fleche
+    this.game.load.image('fleche_0', 'images/right.png');
+    this.game.load.image('fleche_1', 'images/left.png');
+    this.game.load.image('fleche_2', 'images/up.png');
+    this.game.load.image('fleche_3', 'images/down.png');
+    //image torche
+    this.game.load.image('torch', 'images/torch.png');
     // charge le hero
     this.game.load.spritesheet('hero', 'images/hero.png', 52.47, 42);
     //animation saut
@@ -220,7 +243,6 @@ PlayState.preload = function () {
     this.game.load.spritesheet('coin', 'images/coin_animated.png', 38, 42);
     // charger les spiders
     this.game.load.spritesheet('spider', 'images/spider.png', 45.7, 42);
-    this.game.load.spritesheet('dragoon', 'images/dragoon.png', 44, 42);
     //charger porte 
     this.game.load.spritesheet('door', 'images/doors.png', 56.5, 66);
     // charger clef icon
@@ -288,6 +310,8 @@ PlayState._loadLevel = function (data) {
     // creation des groupe dans la function
     this.trees = this.game.add.group();
     this.bushes = this.game.add.group();
+    this.fleches = this.game.add.group();
+    this.torches = this.game.add.group();
     this.platforms = this.game.add.group();
     this.coins = this.game.add.group();
     this.spiders = this.game.add.group();
@@ -298,6 +322,8 @@ PlayState._loadLevel = function (data) {
    data.platforms.forEach(this._spawnPlatform, this);
    data.trees.forEach(this._spawnTree, this);
    data.bushes.forEach(this._spawnBush, this);
+   data.fleches.forEach(this._spawnFleche, this);
+   data.torches.forEach(this._spawnTorch, this);
    // on affiche le personnage et les ennemis
    this._spawnCharacters({hero: data.hero, spiders: data.spiders});
     // active la gravité
@@ -334,6 +360,22 @@ PlayState._spawnTree = function (tree) {
 PlayState._spawnBush = function (bush) {
     let sprite = this.bushes.create(
         bush.x, bush.y, bush.image);
+
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+};
+PlayState._spawnFleche = function (fleche) {
+    let sprite = this.fleches.create(
+        fleche.x, fleche.y, fleche.image);
+
+    this.game.physics.enable(sprite);
+    sprite.body.allowGravity = false;
+    sprite.body.immovable = true;
+};
+PlayState._spawnTorch = function (torch) {
+    let sprite = this.torches.create(
+        torch.x, torch.y, torch.image);
 
     this.game.physics.enable(sprite);
     sprite.body.allowGravity = false;
@@ -379,8 +421,16 @@ PlayState._onHeroVsKey = function (hero, key) {
     this.hasKey = true;
 };
 PlayState._onHeroVsDoor = function (hero, door) {
+    if (this.level < LEVEL_COUNT -1 ) {
     this.sfx.door.play();
     this.game.state.restart(true, false, { level: this.level +1});
+    } else if (this.level == LEVEL_COUNT -1) {
+    console.log('C\'EST BON !');
+    this.win();
+    this.sfx.door.stop();
+    this.game.physics.arcade.overlap(this.hero, this.spiders,
+        this._onHeroVsEnemy, false, this);
+    }
     // TODO: go to the next level instead
 };
 
@@ -488,3 +538,9 @@ PlayState._spawnKey = function (x, y) {
         .loop()
         .start();
 };
+
+PlayState.win = function () {
+
+    game.add.image(0, 0, 'bg');
+    button = game.add.button(game.world.centerX - 75, 275, 'button1', start, this, 2, 1, 0);
+}

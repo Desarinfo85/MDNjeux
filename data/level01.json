@@ -29,6 +29,11 @@
     "trees": [
        
     ],
+    "torches":[],
+    "fleches":[{"image":"fleche_0", "x": 50, "y": 510},
+                 {"image":"fleche_1", "x": 700, "y": 340},
+                 {"image":"fleche_2", "x": 280, "y": 385}
+    ],
     "bushes":[{"image":"bush_1", "x": 700, "y": 310},
               {"image":"bush_2", "x": 460, "y": 100},
               {"image":"bush_3", "x": 100, "y":350}
